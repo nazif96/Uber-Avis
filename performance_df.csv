@@ -1,0 +1,5 @@
+Model,Accuracy,F1-Score (Weighted Avg)
+SVM,0.9183,0.9
+Naive Bayes,0.9117,0.9
+Random Forest,0.9042,0.89
+Logistic Regression,0.9142,0.9
