@@ -1,0 +1,340 @@
+---
+title: " Avis Uber"
+subtitle: " "
+author: "`Nazifou` `AFOLABI`"
+date: today
+date-format: DD/MM/YYYY
+title-slide-attributes:
+    data-background-image: "images/favicon1.png"
+    data-background-size: 50%
+    data-background-opacity: "0.1"
+    data-notes: "Bonjour à tous, on va vous présenter notre travail d'analyse des avis d'Uber"
+format:
+  revealjs:
+    theme: league
+    slide-number: true
+    chalkboard: 
+      buttons: false
+    preview-links: auto
+    logo: images/favicon1.png
+    css: styles.css
+    footer: "Présentation"
+resources:
+  - demo.pdf
+---
+
+## Objectifs
+
+L'objectif est d'analyser les avis des utilisateurs d'Uber à travers une `analyse exploratoire` des données approfondie, suivie d'une phase d'optimisation des `prédictions` basée sur des modèles de `machine learning`.
+
+## Présentation des données 
+
+
+- Source des données : Les données utilisées dans ce projet sont intitulées `Uber Customer Reviews Dataset (2024)` et proviennent de la plateforme Kaggle. Elles sont mises à disposition sous forme d’un fichier au format CSV. 
+
+
+::: {.fragment fragment-index=1}
+- Structure des données:  Le dataset est organisé en 10 colonnes, représentant les différentes caractéristiques des avis clients. 
+:::
+
+
+## Présentation des données
+
+::: {.fragment fragment-index=1}
+- Voici une description des principales colonnes : 
+:::
+
+::: {.fragment fragment-index=2}
+*content* :  Texte de l'avis décrivant l'expérience de l'utilisateur.
+:::
+
+::: {.fragment fragment-index=3}
+*score* : Note numérique donnée par l'utilisateur (1-5)
+:::
+
+::: {.fragment fragment-index=4}
+*thumbsUpCount* : Nombre de likes reçus par l'avis.
+:::
+
+::: {.fragment fragment-index=5}
+- Problématiques potentielles : Un nombre élevé de valeurs manquantes a été identifié dans les données brutes, nécessitant un nettoyage préalable. 
+:::
+
+:::{.notes} 
+Problématiques potentielles(A dire)\n 
+Lors de l'exploration des données brutes, nous avons identifié un nombre élevé de valeurs manquantes dans plusieurs colonnes. Ces données incomplètes peuvent affecter l'analyse et la performance des modèles de machine learning, nécessitant des étapes de nettoyage et d'imputation.
+::: 
+
+## 
+
+<section class="center">
+  <h1> Partie A :  Analyse exploratoire des données</h1>
+</section>
+
+
+## Traitement et nettoyage des données
+
+::: {.fragment fragment-index=1}
+- Suppression des colonnes inutiles
+
+```{.python filename="Analyse.ipynb"}
+col_a_supp = ['userName', 'userImage', 'replyContent', 'repliedAt']
+data = data.drop(columns= col_a_supp) 
+data.head() 
+```
+:::
+
+::: {.fragment fragment-index=2}
+- imputation des Valeurs Manquantes.
+
+```{.python filename="Analyse.ipynb"}
+data['reviewCreatedVersion'].fillna(data['reviewCreatedVersion'].mode()[0], inplace=True) 
+
+data['appVersion'].fillna(data['appVersion'].mode()[0], inplace=True)
+```
+:::
+
+
+:::{.notes} 
+(A dire)
+1. Pour analyse de nos données nous avons commencer par le nettoyage des données en supprimant quelques colonnes juger unitiles tels que 'userName', 'userImage', 'replyContent', 'repliedAt'. donc il nous reste 7 colonnes. 
+2. puis passer à l'imputation de nos valeurs manquantes dans les colonnes concerner  pour eviter d'introduire des biais ou de compromettre l'intégrité des données.
+::: 
+
+
+## Visualisation des données
+
+![](images/output.png)
+
+:::{.notes}
+
+:::
+
+## Visualisation des données 
+
+![Relation entre les notes et le nombre de pouces levés](images/output2.png)
+
+
+:::{.notes}
+
+:::
+
+## Visualisation des données 
+
+![](images/output3.png)
+
+
+:::{.notes}
+
+:::
+
+
+## Visualisation des données 
+
+![](images/output5.png)
+
+
+:::{.notes}
+
+:::
+
+
+## Visualisation des données 
+
+![](images/output6.png)
+
+
+
+:::{.notes}
+
+:::
+
+
+## Visualisation des données 
+
+![](images/output7.png)
+
+
+:::{.notes}
+
+:::
+
+
+## 
+
+<section class="center">
+  <h1>Partie B:  Machine Learning </h1>
+</section>
+
+
+
+## Data Preprocessing
+
+::: {.fragment fragment-index=1}
+```{.python filename="Analyse.ipynb"}
+
+def get_sentiment(score):
+    if score <= 2:
+        return 'Negative'
+    elif score == 3:
+        return 'Neutral'
+    else:
+        return 'Positive'
+
+data['sentiment'] = data['score'].apply(get_sentiment)
+
+
+
+def clean_text(text):
+    text = re.sub(r'[^\w\s]', '', text)  # Remove punctuation
+    text = text.lower()  # Convert to lowercase
+    text = ' '.join([word for word in text.split() if len(word) > 1])  # Remove single-letter words
+    return text
+
+data['clean_content'] = data['content'].apply(clean_text)
+
+
+data.dropna(subset=['clean_content', 'sentiment'], inplace=True)
+```
+:::
+
+:::{.notes}
+- La fonction `get_sentiment(score)` nous permet de convertir les notes(score) en étiquettes de sentiment.
+
+- La fonction `clean_text` permet de Nettoyer la colonne de contenu (supprimer les caractères spéciaux, les mots d'arrêt, etc.)
+
+puis la suppression des lignes dont le contenu ou le sentiment est manquant
+:::
+
+## Data Preprocessing 
+
+::: {.fragment fragment-index=1}
+
+- Découpage de nos données en train et test 
+
+```{.python filename="Analyse.ipynb"}
+X = data['clean_content']
+y = data['sentiment']
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+```
+:::
+
+
+::: {.fragment fragment-index=2}
+
+- Vectorisation avec TF-IDF
+
+```{.python filename="Analyse.ipynb"}
+vectorizer = TfidfVectorizer(max_features=5000)
+X_train_tfidf = vectorizer.fit_transform(X_train)
+X_test_tfidf = vectorizer.transform(X_test)
+```
+:::
+
+:::{.notes}
+
+:::
+
+## Modèles 
+
+```{r model-performance-table, echo=FALSE, message=FALSE, warning=FALSE}
+# Charger les bibliothèques nécessaires
+library(knitr)
+library(kableExtra)
+
+# Créer un data frame avec les résultats des modèles
+model_performance <- data.frame(
+  Model = c("SVM", "Naive Bayes", "Random Forest", "Logistic Regression"),
+  Accuracy = c(0.9183, 0.9117, 0.9042, 0.9142), # Accuracy de chaque modèle
+  `F1-Score` = c(0.90, 0.90, 0.89, 0.90) # Weighted avg F1-Score
+)
+
+# Afficher un tableau bien formaté
+model_performance %>%
+  kable(caption = "Performance des modèles", align = "c") %>%
+  kable_styling(
+    full_width = FALSE, 
+    bootstrap_options = c("striped", "hover", "condensed"),
+    position = "center"
+  ) %>%
+  column_spec(1, border_left = TRUE, border_right = TRUE) %>%
+  column_spec(2, border_left = TRUE, border_right = TRUE) %>%
+  column_spec(3, border_left = TRUE, border_right = TRUE) %>%
+  row_spec(0, bold = TRUE, color = "white", background = "#4CAF50")
+
+```
+
+:::{.notes}
+- Meilleur modèle global : SVM, avec la meilleure accuracy (91.83%) et un excellent F1-Score (plus coûteux, surtout sur de grands ensembles de données).
+- Performances similaires : SVM, Logistic Regression, et Naive Bayes ont des F1-Scores identiques, mais SVM se démarque légèrement avec une meilleure précision globale.
+Random Forest : Bien que performant, il est légèrement moins précis et équilibré par rapport aux autres modèles.
+:::
+  
+
+## modèles
+
+![](images/output8.png)
+
+
+:::{.notes}
+
+Support Vector Machines (SVM) :
+
+Le SVM offre la meilleure précision et un F1-Score compétitif. Cela suggère qu’il généralise bien, particulièrement dans ce contexte.
+Il peut être computationnellement plus coûteux, surtout sur de grands ensembles de données.
+Naive Bayes :
+
+Bien que légèrement en dessous du SVM en précision, il a un F1-Score équivalent.
+Naive Bayes est rapide et peut être préférable pour des applications temps réel ou si le jeu de données est très large.
+Random Forest :
+
+Bien qu'il ait les scores les plus faibles, Random Forest reste robuste et interprétable. Il est utile pour identifier les variables importantes.
+Logistic Regression :
+
+Logistic Regression est une méthode simple et efficace, avec des scores très proches de ceux du SVM.
+Elle est facile à expliquer, à mettre en œuvre et souvent un bon choix de base.
+:::
+
+## Conclusion 
+
+::: {.fragment fragment-index=1}
+- Identification des versions d'application ayant un impact significatif sur les notes 
+::: 
+
+::: {.fragment fragment-index=2}
+- Identification des termes les plus fréquents associés à la satisfaction des utlisateurs(5)  
+:::
+
+::: {.fragment fragment-index=3}
+- La distribution des notes a confirmé une tendance générale vers des avis positifs,
+:::
+
+
+::: {.fragment fragment-index=4}
+*SVM*  est le modèle retenu  offrant  la meilleure précision .
+::: 
+
+:::{.notes}
+
+Ce qui en fait le choix privilégié. étant donner que l'objectif est d'optimiser les prédictions. 
+
+SVM se distingue avec la meilleure précision (91.83%) et un F1-Score compétitif (0.90), faisant de lui le choix optimal si la performance.
+
+Même si *Logistic Regression* ou *Naive Bayes* sont de solides alternatives, avec des performances très proches et qui sont des modèle simple à mettre en œuvre et rapide à exécuter
+:::
+
+
+## Quelques insights Clés
+
+::: {.fragment fragment-index=1}
+Certaines versions de l'application nécessitent une attention particulière pour améliorer l'expérience utilisateur.
+:::
+
+::: {.fragment fragment-index=2}
+Les avis positifs sont principalement associés à des thèmes comme la "facilité d'utilisation", la "courtoisie des conducteurs", et le "rapport qualité-prix".
+::: 
+
+::: {.fragment fragment-index=3}
+Les modèles testés sont robustes et pourraient être utilisés en production pour anticiper la satisfaction des utilisateurs et prioriser les retours
+:::
