@@ -1,1 +1,1 @@
-L'objectif de ce projet est d'analyser les avis d'Uber à travers une `analyse exploratoire des données`, suivie d'une prédiction à l'aide de modèles de `machine learning`
+L'objectif de ce projet est d'analyser les avis d'Uber à travers une `analyse exploratoire des données` approfondie, suivie d'une phase d'optimisation des prédictions basée sur des modèles de `machine learning`
