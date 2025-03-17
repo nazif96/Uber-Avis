@@ -1,4 +1,8 @@
-L'objectif de ce projet est d'analyser les avis d'Uber à travers une `analyse exploratoire des données` approfondie, suivie d'une phase d'optimisation des prédictions basée sur des modèles de `machine learning`
+## Avis Uber 🚗
+Bienvenue dans l'analyse des **AVIS UBER**. Ce projet vise à fournir une analyse détaillée des avis données par chaque utlisateur.
+
+## objectifs
+L'objectif de ce projet est d'analyser les avis d'Uber à travers une `analyse exploratoire des données` approfondie, suivie d'une phase d'optimisation des prédictions basée sur des modèles de `machine learning` permettant de definr des **insights clés** repondant à des question business comme l'amelioration l'experience utilsateur  .
 
 
 ### Analyse Exploratoire des Données :
@@ -9,8 +13,13 @@ L'objectif de ce projet est d'analyser les avis d'Uber à travers une `analyse e
 
 ### Modélisation et Performance :
 
-- Développement et évaluation de modèles prédictifs (SVM, Naive Bayes, Random Forest, Logistic Regression) avec des performances élevées (Accuracy et F1-Score ~90%).
-Confirmation de la robustesse des modèles pour une utilisation potentielle en production.
+- Développement et évaluation de modèles prédictifs  avec des performances élevées (Accuracy et F1-Score ~90%) Confirmation de la robustesse des modèles pour une utilisation potentielle en production.
+- 
+#### Modèles de Prévision :
+- **SVM**
+- **Naive Bayes**
+- **Random Forest**
+- **Logistic Regression**
 
 ### Insights et Perspectives :
 
